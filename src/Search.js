@@ -16,10 +16,27 @@ class Search extends React.Component {
   }
 
   onSearch = (query) => {
-    BooksAPI.search(query).then((books) => {
-      books.map(book => (this.props.booksInShelf.filter((b) => b.id === book.id).map(b => book.shelf = b.shelf)))
-      this.setState({query: query, booksFromSearch: books})
-    })
+    if (query.length === 0) {
+      // Remove the search result and make sure 'Search results are not shown when all of the text is deleted out of the search input box.'
+      this.setState({query: '', booksFromSearch: []})
+    } else {
+      BooksAPI.search(query).then((books) => {
+        if (books.error !== undefined) {
+          // bookGrid.innerHTML = '<h2>Air ball! Try another keyword.</h2>'
+        } else {
+          books.map(book => (this.props.booksInShelf.filter((b) => b.id === book.id).map(b => book.shelf = b.shelf)))
+          this.setState({query: query, booksFromSearch: books})
+        }
+      })
+    }
+  }
+
+  passBookUpdate = (book, shelf) => {
+    console.log('=========');
+    console.log(book);
+    console.log(shelf);
+    console.log('=========');
+    this.props.onBookUpdate(book, shelf)
   }
 
   render() {
@@ -36,16 +53,14 @@ class Search extends React.Component {
           </div>
         </div>
         <div className="search-books-results">
-          <ol className="books-grid">
-            <div className="bookshelf-books">
-              <ol className="books-grid">
-                {this.state.booksFromSearch.map(bookInfo => (
-                    <Book bookInfo={bookInfo} key={bookInfo.id} onBookUpdate={this.props.onBookUpdate}/>
-                  ))
-                }
-              </ol>
-            </div>
-          </ol>
+          <div className="bookshelf-books">
+            <ol className="books-grid">
+              {this.state.booksFromSearch.map(bookInfo => (
+                  <Book bookInfo={bookInfo} key={bookInfo.id} onBookUpdate={this.passBookUpdate}/>
+                ))
+              }
+            </ol>
+          </div>
         </div>
       </div>
     )
