@@ -10,7 +10,6 @@ class Book extends Component {
   render() {
     return (
       <li>
-        {console.log(this.props.bookInfo)}
         <div className="book-top">
           {
             // handle the missing thumbnail
